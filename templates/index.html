@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time Chat</title>
+    <style>
+        /* Basic styling */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        #chat-box {
+            width: 80%;
+            height: 400px;
+            margin: 20px auto;
+            padding: 10px;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            overflow-y: scroll;
+        }
+        #message-box {
+            width: 80%;
+            margin: 20px auto;
+            display: flex;
+        }
+        #message-box input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+        #message-box button {
+            padding: 10px;
+            background-color: #5cb85c;
+            color: white;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="chat-box"></div>
+    <div id="message-box">
+        <input type="text" id="message" placeholder="Type your message here...">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.min.js"></script>
+
+    <script>
+        var socket = io.connect('http://127.0.0.1:5000');  // Ensure this matches your server
+
+        function sendMessage() {
+            const message = document.getElementById('message').value;
+            if (message) {  // Ensure message is not empty
+                socket.send(message);  // Send the message to the server
+                document.getElementById('message').value = '';  // Clear input box
+            }
+        }
+
+        socket.on('message', function(msg) {
+            console.log(`Message from server: ${msg}`);  // Log message for debugging
+            const chatBox = document.getElementById('chat-box');
+            const messageElement = document.createElement('p');
+            messageElement.innerText = msg;
+            chatBox.appendChild(messageElement);
+            chatBox.scrollTop = chatBox.scrollHeight;  // Auto-scroll to the latest message
+        });
+    </script>
+</body>
+</html>
